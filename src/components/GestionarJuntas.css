@@ -1,0 +1,24 @@
+#tablaJuntas{
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-top: 5%;
+    padding-bottom: 20%;
+    
+}
+
+#perfil{
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-top: 5%;
+    padding-bottom: 7%;
+    
+}
+
+#FormInv{
+    display: grid;
+    grid-template-rows: 1fr;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    
+
+}

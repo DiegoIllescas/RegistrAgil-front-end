@@ -1,0 +1,5 @@
+.Administrador, .Anfitrion, .Recepcionista{
+    min-height: 100vh;
+    height: auto;
+    background-color: #F0F8FF;
+}
