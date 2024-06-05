@@ -22,4 +22,4 @@ Esto correra el front en 'http://localhost:5173'
 
 Tener el servidor de back corriendo
 
-`https://github.com/DiegoIllescas/RegistrAgil-back-end`
+<a href="https://github.com/DiegoIllescas/RegistrAgil-back-end"> Repositorio de Back </a>
