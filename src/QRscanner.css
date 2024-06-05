@@ -1,8 +1,17 @@
 /* QRscanner.css */
-.scanner-container {
-    margin: 30px;
-    width: 300px; /* Cambia esto al tamaño que desees */
-    height: 300px; /* Cambia esto al tamaño que desees */
-    /* Puedes agregar otros estilos, como borde, margen, etc. */
-  }
-  
+#reader{
+  margin: 35px;
+  width: 300px; /* Cambia esto al tamaño que desees */
+  height: 300px; /* Cambia esto al tamaño que desees */
+  /* Puedes agregar otros estilos, como borde, margen, etc. */
+}
+
+.App{
+  text-align: center;
+
+}
+
+#FormInv{
+  margin: 10px;
+
+}

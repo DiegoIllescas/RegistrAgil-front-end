@@ -11,9 +11,10 @@ import Recepcionista from "./Recepcionista";
 import QrScanner from "qr-scanner";
 import QRgenerator from "./QrScanner";
 import QRscanner from "./QrScanner";
-import { PGRecepcionista } from "./PGenRecepcionista";
+//import { PGRecepcionista } from "./PGenRecepcionista";
 import { PagPrinusers } from "./PagPrincipalusuarios";
 import UserProfile from "./components/Perfil";
+import Calendar from "./components/Calendar"
 import { ViEntrSal } from "./VisualizarEntrSal";
 import RegEmp from "./components/RegistrarEmp";
 import PantGesInvi from "./PantGestInv";
@@ -35,7 +36,7 @@ export function App() {
         <Route path="/Administrador" exact element={<Administrador />}>
           <Route path="Bienvenida" element={<PagPrinusers />} />
           <Route path="Perfil" element={<UserProfile />} />
-          <Route path="Calendario"/>
+          <Route path="CalendarioJuntas" element={<Calendar />} />
           <Route path="VisualizarES" element={<ViEntrSal />} />
           <Route path="RegistrarEmpleado" element={<RegEmp />} />
           <Route path="GestionarJuntas" element={<GestionarJuntas />} />
@@ -45,25 +46,23 @@ export function App() {
         <Route path="/Anfitrion" exact element={<Anfitrion />}>
           <Route path="Bienvenida" element={<PagPrinusers />} />
           <Route path="Perfil" element={<UserProfile />} />
-          <Route path="Calendario"/>
+          <Route path="CalendarioJuntas" element={<Calendar />} />
           <Route path="CrearJunta" element={<CrearJunta />} />
           <Route path="GestionarJuntas" element={<GestionarJuntas />} />
         </Route>
         <Route path="/Invitado" exact element={<Invitado />}>
           <Route path="Bienvenida" element={<PagPrinusers />} />
-          <Route path="DescargarQR" element={<DescargarQR />} />
+          {/* <Route path="DescargarQR" element={<DescargarQR />} /> */}
         </Route>
+        <Route path="/Invitado/DescargarQR" element={<DescargarQR />} />
         <Route path="/Recepcionista" exact element={<Recepcionista />}>
           <Route path="Bienvenida" element={<PagPrinusers />} />
           <Route path="Perfil" element={<UserProfile />} />
-          <Route path="QR" element={<PGRecepcionista />} />
-
-          <Route path="VisualizarDatos" element={<VisualizarDatos />} />
-          <Route path="ConsultarJuntas"/>
+          <Route path="QR" element={<VisualizarDatos />} />
+          <Route path="ConsultarJuntas" />
         </Route>
         <Route path="/FormularioInvitado" exact element={<FormInv />} />
         <Route path="/FormularioAcompañante" exact element={<FormAcom />} />
-        <Route path="/*" element={<PagInicio />} />
       </Routes>
     </Router>
   );

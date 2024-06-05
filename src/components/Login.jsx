@@ -52,16 +52,16 @@ function LogIn() {
           localStorage.setItem("permisos", data.permisos);
           switch (data.permisos) {
             case 1:
-              navigate('/Administrador');
+              navigate('/Administrador/Bienvenida');
               break;
             case 2:
-              navigate('/Invitado');
+              navigate('/Invitado/Bienvenida');
               break;
             case 3:
-              navigate('/Recepcionista');
+              navigate('/Recepcionista/Bienvenida');
               break;
             case 4:
-              navigate('/Anfitrion');
+              navigate('/Anfitrion/Bienvenida');
               break;    
           }
 
