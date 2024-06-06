@@ -30,13 +30,14 @@ function ResetPassword() {
                 referrerPolicy: "no-referrer"
               };
 
-              fetch("http://localhost/backend/claves.php", options)
+              fetch("http://localhost/backend/clave.php", options)
               .then(response => response.json())
               .then(data => {
                 if(data.success) {
                     setUser(data.content);
                 }else{
                     //Modal o Alerta de que el token expiro
+                    //El error especifico se encuentra en data.error
                     navigate('/Inicio');
                 }
               })

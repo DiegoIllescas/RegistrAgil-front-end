@@ -56,7 +56,7 @@ function FormInv() {
             referrerPolicy: "no-referrer"
           };
 
-          fetch("http://localhost/backend/invitaciones.php", options)
+          fetch("http://localhost/backend/invitacion.php", options)
           .then(response => response.json())
           .then(data => {
             if(data.success) {
