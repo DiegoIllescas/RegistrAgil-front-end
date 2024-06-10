@@ -109,7 +109,7 @@ function EditarJuntas({ setPeticion, junta }) {
                 cancelButtonColor: "#a7000f",
                 padding: "3em",
                 width: 800,
-                color: "#a7000f",
+                color: "#00a70f",
                 animation: true,
                 title: "Edicion correcta",
                 text: data.message,

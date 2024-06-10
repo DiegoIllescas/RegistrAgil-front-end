@@ -61,7 +61,7 @@ function BorrarJuntas({ setPeticion, junta }) {
                 cancelButtonColor: "#a7000f",
                 padding: "3em",
                 width: 800,
-                color: "#a7000f",
+                color: "#00a70f",
                 animation: true,
                 title: "Eliminacion correcta",
                 text: data.message,
