@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React ,{ useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Row, Container, Modal, Button } from 'react-bootstrap';
 import "../CSS/Calendar.css";
 import moment from 'moment';
@@ -12,38 +13,42 @@ const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(moment());
-  const [meetings, setMeetings] = useState([
-    {
-      anfitrion: 'Carlos Villareal',
-      asunto: 'Reunión General',
-      sala: 'Sala A',
-      fecha: '2024-06-05',
-      horai: '08:00',
-      horaf: '10:00',
-      direccion: 'CDMX',
-      descripcion: 'Description 1'
-    },
-    {
-      anfitrion: 'Jesus Pérez',
-      asunto: 'Reunión equipo Back-End',
-      sala: 'Sala B',
-      fecha: '2024-06-05',
-      horai: '07:00',
-      horaf: '09:00',
-      direccion: 'CDMX',
-      descripcion: 'Description 2'
-    },
-    {
-      anfitrion: 'Ana Medina',
-      asunto: 'Reunión equipo Front-End',
-      sala: 'Sala A',
-      fecha: '2024-06-20',
-      horai: '10:00',
-      horaf: '11:00',
-      direccion: 'CDMX',
-      descripcion: 'Description 3'
-    }
-  ]);
+  const [meetings, setMeetings] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      alert("No tienes permiso");
+      navigate('/LogIn');
+    }else{
+    const options = {
+      method : 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization' : 'Bearer '+ token
+      },
+      body : JSON.stringify({
+        mes: currentDate.month() + 1,
+        year : currentDate.year()
+      }),
+      referrerPolicy: "no-referrer"
+    };
+    fetch("http://localhost/backend/junta.php", options)
+    .then((response) => response.json())
+    .then((data) => {
+      if(data.success) {
+        setMeetings(data.juntas);
+      }else{
+        if(data.error == "Sesion expirada") {
+          navigate('/LogIn')
+        }
+      }
+    })
+  }
+  },[currentDate]);
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -66,13 +71,13 @@ const Calendar = () => {
   };
 
   const getMeetingsForDay = (day) => {
-    return meetings.filter(meeting => moment(meeting.fecha).isSame(day, 'day')).sort((a, b) => moment(a.horai, 'HH:mm') - moment(b.horai, 'HH:mm'));
+    return meetings.filter(meeting => moment(meeting.fecha).isSame(day, 'day')).sort((a, b) => moment(a.hora_inicio, 'HH:mm') - moment(b.hora_inicio, 'HH:mm'));
   };
 
   const getMeetingStatus = (meeting) => {
     const now = moment();
-    const start = moment(meeting.fecha + ' ' + meeting.horai, 'YYYY-MM-DD HH:mm');
-    const end = moment(meeting.fecha + ' ' + meeting.horaf, 'YYYY-MM-DD HH:mm');
+    const start = moment(meeting.fecha + ' ' + meeting.hora_inicio, 'YYYY-MM-DD HH:mm');
+    const end = moment(meeting.fecha + ' ' + meeting.hora_fin, 'YYYY-MM-DD HH:mm');
 
     if (now.isBefore(start)) return 'future';
     if (now.isBetween(start, end)) return 'in-progress';
@@ -138,7 +143,7 @@ const Calendar = () => {
     <div key={meeting.asunto} className="mb-4">
       <h5>{renderStatusCircle(getMeetingStatus(meeting))} {meeting.asunto}</h5>
       <p>{meeting.anfitrion}</p>
-      <p className="mb-2"><Icon.Clock color="#0B1215" size={14} className="me-2" />{meeting.horai} - {meeting.horaf}</p>
+      <p className="mb-2"><Icon.Clock color="#0B1215" size={14} className="me-2" />{meeting.hora_inicio} - {meeting.hora_fin}</p>
       <Button variant="link" className="boton-detalles-juntas" onClick={() => handleDetailClick(meeting)}>Ver más detalles</Button>
     </div>
   );
@@ -192,7 +197,7 @@ const Calendar = () => {
                   <p><strong>Anfitrión: </strong>{detailedMeeting.anfitrion}</p>
                   <p><strong>Descripción: </strong>{detailedMeeting.descripcion}</p>
                   <p><Icon.Calendar color="#0B1215" size={13} className="me-2" />{detailedMeeting.fecha}</p>
-                  <p><Icon.Clock color="#0B1215" size={13} className="me-2" />{detailedMeeting.horai} - {detailedMeeting.horaf}</p>
+                  <p><Icon.Clock color="#0B1215" size={13} className="me-2" />{detailedMeeting.hora_inicio} - {detailedMeeting.hora_fin}</p>
                   <p><Icon.GeoAlt color="#0B1215" size={15} className="me-2" />{detailedMeeting.direccion} - {detailedMeeting.sala}</p>
                 </div>
               )}
