@@ -1,7 +1,7 @@
 import { Container, Row, Col, Image, Form, Button } from "react-bootstrap";
 import "./PantGestInv.css";
 import Logo from "./imgs/Logo.jpg";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 function PantGesInvi() {
   const [mostrarElemtoGesInv, setMostrarElementoGesInv] = useState(true);
@@ -23,7 +23,7 @@ function PantGesInvi() {
     let info = [];
     console.log("Obteniendo datos");
     const response = await fetch(
-      "http://localhost/RegistrAgil/GestionarInvitados/VisualizarInvitados.php",
+      "http://localhost/backend/invitado.php",
       {
         method: "POST",
         mode: "cors",
@@ -117,7 +117,7 @@ function PantGesInvi() {
                       defaultValue={correo}
                       type="email"
                       className="InputCorreo"
-                      disabled={!edicionHabilitadaGesInv}
+                      disabled
                     />
                   </div>
                   <div>
