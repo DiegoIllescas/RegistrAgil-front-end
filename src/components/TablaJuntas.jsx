@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 
 function TablaJuntas({
   juntas,
-  invitados,
   filtro,
   paginaActual,
   setPaginaActual,
@@ -19,20 +18,20 @@ function TablaJuntas({
   const juntasMaximas = 2;
 
   useEffect(() => {
-    console.log(juntas);
+    //console.log(juntas);
     let contador = 0;
     let control = 0;
     let pag = [];
     let filas = [];
     juntas.forEach((junta) => {
       let nombreAnfitrion =
-        junta.anfitrion_nombre +
+        junta.nombre +
         " " +
-        junta.anfitrion_apellido_paterno +
+        junta.apellido_paterno +
         " " +
-        junta.anfitrion_apellido_materno;
+        junta.apellido_materno;
       if (
-        (nombreAnfitrion + " " + junta.reunion_concepto)
+        (nombreAnfitrion + " " + junta.asunto)
           .toLowerCase()
           .indexOf(filtro.toLowerCase()) === -1
       ) {
@@ -51,7 +50,7 @@ function TablaJuntas({
       }
       filas.push(
         <Container
-          className="card-datos d-flex justify-content-center"
+          className="card-datos d-flex justify-content-center cont-junta"
           key={contador}
         >
           <Row>
@@ -62,7 +61,7 @@ function TablaJuntas({
                     <Form.Label>Fecha</Form.Label>
                     <Form.Control
                       className="input card-input"
-                      value={junta.reunion_fecha}
+                      value={junta.fecha}
                       type="text"
                       readOnly
                     ></Form.Control>
@@ -73,7 +72,7 @@ function TablaJuntas({
                     <Form.Label>Hora de Inicio</Form.Label>
                     <Form.Control
                       className="input card-input"
-                      value={junta.reunion_horaInicio}
+                      value={junta.hora_inicio}
                       type="text"
                       readOnly
                     ></Form.Control>
@@ -84,7 +83,7 @@ function TablaJuntas({
                     <Form.Label>Hora de Fin</Form.Label>
                     <Form.Control
                       className="input card-input"
-                      value={junta.reunion_horaFin}
+                      value={junta.hora_fin}
                       type="text"
                       readOnly
                     ></Form.Control>
@@ -110,7 +109,7 @@ function TablaJuntas({
                     <Form.Label>Asunto de la junta</Form.Label>
                     <Form.Control
                       className="input card-input"
-                      value={junta.reunion_concepto}
+                      value={junta.asunto}
                       type="text"
                       readOnly
                     ></Form.Control>
@@ -123,7 +122,7 @@ function TablaJuntas({
                     <Form.Label>Sala</Form.Label>
                     <Form.Control
                       className="input card-input"
-                      value={junta.reunion_sala}
+                      value={junta.sala}
                       type="text"
                       readOnly
                     ></Form.Control>
@@ -139,7 +138,7 @@ function TablaJuntas({
                     <Form.Control
                       className="input card-input"
                       as="textarea"
-                      value={junta.reunion_descripcion}
+                      value={junta.descripcion}
                       readOnly
                     ></Form.Control>
                   </Form.Group>
@@ -155,7 +154,7 @@ function TablaJuntas({
                     </Row>
                     <Row>
                       <Col>
-                        <VerInvitados invitados={invitados} />
+                        <VerInvitados invitados={junta.invitados} />
                       </Col>
                     </Row>
                   </Form.Group>
@@ -213,9 +212,9 @@ function TablaJuntas({
           </tr>*/
     setRows(filas);
     var paginasMaximas = Math.ceil(contador / juntasMaximas);
-    console.log(contador);
+    //console.log(contador);
     for (let index = 1; index <= paginasMaximas; index++) {
-      console.log("Entra al for " + paginasMaximas);
+      //console.log("Entra al for " + paginasMaximas);
       pag.push(
         <Pagination.Item
           key={index}

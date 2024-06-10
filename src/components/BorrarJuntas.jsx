@@ -6,10 +6,12 @@ import * as Icon from "react-bootstrap-icons";
 const MySwal = withReactContent(Swal);
 
 async function solicitarEliminado(url, data) {
+  const token = localStorage.getItem("token");
   const response = await fetch(url, {
-    method: "POST",
+    method: "DELETE",
     mode: "cors",
     headers: {
+      "Authorization": "Bearer " + token,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -30,7 +32,7 @@ function BorrarJuntas({ setPeticion, junta }) {
       html: (
         <Row>
           <Col>
-            Estas seguro que deseas borrar la junta: {junta.reunion_concepto}
+            Estas seguro que deseas borrar la junta: {junta.asunto}
           </Col>
         </Row>
       ),
@@ -42,12 +44,9 @@ function BorrarJuntas({ setPeticion, junta }) {
       preConfirm: async () => {
         try {
           solicitarEliminado(
-            "http://localhost/RegistrAgil/GestionarJuntas/Eliminar_Juntas.php",
+            "http://localhost/backend/junta.php",
             {
-              hora_inicio: junta.reunion_horaInicio,
-              fecha: junta.reunion_fecha,
-              sala: junta.reunion_sala,
-              correo: junta.anfitrion_correo,
+              id_junta : junta.id
             }
           ).then((data) => {
             if (!data || data === null) {

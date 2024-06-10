@@ -20,29 +20,30 @@ function GestionarJuntas() {
     { nombre: "Mariana Jimenes Bonilla", correo: "mari789@gmail.com" },
   ];
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    console.log("Se actualiza la tabla");
     async function getDataTable(url) {
-      console.log("Obteniendo datos");
       const response = await fetch(url, {
         method: "GET",
         mode: "cors",
         headers: {
+          "Authorization": "Bearer " + token,
           "Content-Type": "application/json",
         },
       });
       const json = await response.json();
-      if (json.juntas === null) {
-        console.log(json.error);
+      if (json.success) {
+        //console.log(json.juntas);
+        setJuntas(json.juntas); 
       } else {
-        console.log(json.juntas);
-        setJuntas(json.juntas);
+        console.log(json.error);
+        navigate('/LogIn')
       }
     }
     getDataTable(
-      "http://localhost/RegistrAgil/GestionarJuntas/generar_json_juntas.php"
+      "http://localhost/backend/junta.php"
     );
     setPeticion(true);
   }, []);
@@ -82,7 +83,6 @@ function GestionarJuntas() {
           </Form>
           <TablaJuntas
             juntas={juntas}
-            invitados={invitados}
             filtro={textoFiltro}
             paginaActual={paginaActual}
             setPaginaActual={setPaginaActual}

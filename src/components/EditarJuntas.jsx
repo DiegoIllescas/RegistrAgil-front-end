@@ -8,10 +8,12 @@ import { useState } from "react";
 const MySwal = withReactContent(Swal);
 
 async function solicitarEdicion(url, data) {
+  const token = localStorage.getItem("token");
   const response = await fetch(url, {
-    method: "POST",
+    method: "PUT",
     mode: "cors",
     headers: {
+      "Authorization" : "Bearer " + token,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
@@ -34,42 +36,42 @@ function EditarJuntas({ setPeticion, junta }) {
             <InputGroup.Text id="basic-addon1">Asunto</InputGroup.Text>
             <Form.Control
               id={"asunto" + junta.id}
-              defaultValue={junta.reunion_concepto}
+              defaultValue={junta.asunto}
             />
           </InputGroup>
           <InputGroup className="mb-3">
             <InputGroup.Text id="basic-addon1">Fecha</InputGroup.Text>
             <Form.Control
               id={"fecha" + junta.id}
-              defaultValue={junta.reunion_fecha}
+              defaultValue={junta.fecha}
             />
           </InputGroup>
           <InputGroup className="mb-3">
             <InputGroup.Text id="basic-addon1">Hora de Inicio</InputGroup.Text>
             <Form.Control
               id={"horarioI" + junta.id}
-              defaultValue={junta.reunion_horaInicio}
+              defaultValue={junta.hora_inicio}
             />
           </InputGroup>
           <InputGroup className="mb-3">
             <InputGroup.Text id="basic-addon1">Hora de Fin</InputGroup.Text>
             <Form.Control
               id={"horarioF" + junta.id}
-              defaultValue={junta.reunion_horaFin}
+              defaultValue={junta.hora_fin}
             />
           </InputGroup>
           <InputGroup className="mb-3">
             <InputGroup.Text id="basic-addon1">Sala</InputGroup.Text>
             <Form.Control
               id={"sala" + junta.id}
-              defaultValue={junta.reunion_sala}
+              defaultValue={junta.sala}
             />
           </InputGroup>
           <InputGroup className="mb-3">
             <InputGroup.Text id="basic-addon1">Descripción</InputGroup.Text>
             <Form.Control
               id={"descripcion" + junta.id}
-              defaultValue={junta.reunion_descripcion}
+              defaultValue={junta.descripcion}
             />
           </InputGroup>
         </Form>
@@ -84,18 +86,14 @@ function EditarJuntas({ setPeticion, junta }) {
       preConfirm: async () => {
         try {
           solicitarEdicion(
-            "http://localhost/RegistrAgil/GestionarJuntas/Editar_Juntas.php",
+            "http://localhost/backend/junta.php",
             {
-              descripcion: document.getElementById("descripcion" + junta.id)
-                .value,
+              id_junta: junta.id,
+              descripcion: document.getElementById("descripcion" + junta.id).value,
               hora_inicio: document.getElementById("horarioI" + junta.id).value,
-              hora_inicio_Actual: junta.reunion_horaInicio,
               hora_fin: document.getElementById("horarioF" + junta.id).value,
               fecha: document.getElementById("fecha" + junta.id).value,
-              fecha_Actual: junta.reunion_fecha,
               sala: document.getElementById("sala" + junta.id).value,
-              sala_Actual: junta.reunion_sala,
-              correo: junta.anfitrion_correo,
               asunto: document.getElementById("asunto" + junta.id).value,
             }
           ).then((data) => {
@@ -126,7 +124,7 @@ function EditarJuntas({ setPeticion, junta }) {
                 color: "#a7000f",
                 animation: true,
                 title: "Error",
-                text: "Error al actualizar la junta",
+                text: data.error,
               });
             }
 
