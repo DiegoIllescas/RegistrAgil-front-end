@@ -14,6 +14,11 @@ const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(moment());
   const [meetings, setMeetings] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showGuestsModal, setShowGuestsModal] = useState(false);
+  const [detailedMeeting, setDetailedMeeting] = useState(null);
 
   const navigate = useNavigate();
 
@@ -50,11 +55,6 @@ const Calendar = () => {
   }
   },[currentDate]);
 
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [detailedMeeting, setDetailedMeeting] = useState(null);
-
   const startOfMonth = currentDate.clone().startOf('month').startOf('week');
   const endOfMonth = currentDate.clone().endOf('month').endOf('week');
 
@@ -68,6 +68,11 @@ const Calendar = () => {
     setDetailedMeeting(meeting);
     setShowModal(false);
     setShowDetailModal(true);
+  };
+
+  const handleGuestsClick = (meeting) => {
+    setDetailedMeeting(meeting);
+    setShowGuestsModal(true);
   };
 
   const getMeetingsForDay = (day) => {
@@ -199,11 +204,31 @@ const Calendar = () => {
                   <p><Icon.Calendar color="#0B1215" size={13} className="me-2" />{detailedMeeting.fecha}</p>
                   <p><Icon.Clock color="#0B1215" size={13} className="me-2" />{detailedMeeting.hora_inicio} - {detailedMeeting.hora_fin}</p>
                   <p><Icon.GeoAlt color="#0B1215" size={15} className="me-2" />{detailedMeeting.direccion} - {detailedMeeting.sala}</p>
+                  <Button variant="link" className="boton-detalles-juntas" onClick={() => { setShowDetailModal(false); handleGuestsClick(detailedMeeting) }}>Ver invitados</Button>
                 </div>
               )}
             </Modal.Body>
             <Modal.Footer>
               <Button className="boton" onClick={() => { setShowDetailModal(false); setShowModal(true) }}>
+                Regresar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Modal show={showGuestsModal} onHide={() => setShowGuestsModal(false)} className="custom-modal">
+            <Modal.Header closeButton>
+              <Modal.Title>Invitados</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {detailedMeeting && Array.isArray(detailedMeeting.invitados) && detailedMeeting.invitados.length > 0 ? (
+                detailedMeeting.invitados.map((invitado, index) => (
+                  <p key={index}>{index + 1}. {invitado}</p>
+                ))
+              ) : (
+                <p>Sin invitados.</p>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button className="boton" onClick={() => { setShowGuestsModal(false); setShowDetailModal(true) }}>
                 Regresar
               </Button>
             </Modal.Footer>
