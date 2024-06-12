@@ -47,7 +47,7 @@ function RecoverPassword() {
                     navigate('/Inicio');
                 }else{
                     //Aqui iria que no se pudo que lo intente mas tarde, el mensaje especifico de error se encuentra en la respuesta como: data.error
-                    console.log("Failed");
+                    alert(data.error);
                 }
             });
         }
