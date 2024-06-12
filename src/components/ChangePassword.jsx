@@ -11,8 +11,7 @@ function ChangePassword() {
     const [confirmPassword, setConfirmPassword] = useState(""); 
     const [passwordErrors, setPasswordErrors] = useState([]);
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
-    const [passwordMatch, setPasswordMatch] = useState(false); 
-    const [intentoEnvio, setIntentoEnvio] = useState(false); 
+    const [passwordMatch, setPasswordMatch] = useState(false);
     const navigate = useNavigate();
 
     // Expresión regular para validar la contraseña
@@ -72,7 +71,6 @@ function ChangePassword() {
     // Manejador de envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIntentoEnvio(true);
         if (passwordMatch) {
             const correo = window.localStorage.getItem("correo");
             const datos = {
@@ -148,7 +146,7 @@ function ChangePassword() {
                                                 placeholder="Introduce tu nueva contraseña"
                                                 value={newPassword}
                                                 onChange={handleNewPasswordChange}
-                                                isInvalid={passwordErrors.length > 0 && intentoEnvio} // Marca el campo como inválido si hay errores de contraseña y se ha intentado enviar el formulario
+                                                isInvalid={passwordErrors.length > 0 } // Marca el campo como inválido si hay errores de contraseña y se ha intentado enviar el formulario
                                             />
                                             <Form.Control.Feedback type="invalid">
                                                 {passwordErrors.map((error, index) => (
@@ -170,7 +168,7 @@ function ChangePassword() {
                                                 placeholder="Confirma tu nueva contraseña"
                                                 value={confirmPassword}
                                                 onChange={handleConfirmPasswordChange}
-                                                isInvalid={confirmPasswordError && intentoEnvio} // Marca el campo como inválido si hay errores de confirmación de contraseña y se ha intentado enviar el formulario
+                                                isInvalid={confirmPasswordError } // Marca el campo como inválido si hay errores de confirmación de contraseña y se ha intentado enviar el formulario
                                             />
                                             <Form.Control.Feedback type="invalid">
                                                 {confirmPasswordError}
