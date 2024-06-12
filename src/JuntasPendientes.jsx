@@ -1,31 +1,45 @@
 import React from "react";
 import { Card, ListGroup, ListGroupItem, Button } from "react-bootstrap";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CSS/JuntasPendientes.css";
 
 export function JuntasPendientes() {
   const navigate = useNavigate();
-  const juntas = [
-    {
-      anfitrion: "Anfitrión 1",
-      asunto: "Asunto de la Junta 1",
-      fecha: "2024-06-01",
-      horaInicio: "10:00",
-      horaFin: "11:00",
-      sala: "Sala A"
-    },
-    {
-      anfitrion: "Anfitrión 2",
-      asunto: "Asunto de la Junta 2",
-      fecha: "2024-06-02",
-      horaInicio: "12:00",
-      horaFin: "13:00",
-      sala: "Sala B"
-    }
-  ];
+  const [juntas, setJuntas] = useState([]);
 
-  const handleConsultarQR = () => {
-    navigate("/Invitado/DescargarQR");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if(!token){
+      alert("No tienes permiso");
+      navigate('/LogIn');
+    }else{
+    const options = {
+      method : 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization' : 'Bearer '+ token
+      },
+      referrerPolicy: "no-referrer"
+    };
+    fetch("http://localhost/backend/junta.php", options)
+    .then((response) => response.json())
+    .then((data) => {
+      if(data.success) {
+        setJuntas(data.juntas);
+      }else{
+        if(data.error == "Sesion expirada") {
+          navigate('/LogIn')
+        }
+      }
+    });
+  }
+  },[]);
+
+  const handleConsultarQR = (e) => {
+    const id = e.target.id;
+    navigate("/Invitado/DescargarQR?id="+id);
   };
 
   return (
@@ -39,14 +53,14 @@ export function JuntasPendientes() {
             <Card.Text>
               <strong>Anfitrión:</strong> {junta.anfitrion} <br />
               <strong>Fecha:</strong> {junta.fecha} <br />
-              <strong>Hora de Inicio:</strong> {junta.horaInicio} <br />
-              <strong>Hora de Fin:</strong> {junta.horaFin} <br />
+              <strong>Hora de Inicio:</strong> {junta.hora_inicio} <br />
+              <strong>Hora de Fin:</strong> {junta.hora_fin} <br />
               <strong>Sala:</strong> {junta.sala}
             </Card.Text>
           </Card.Body>
           <ListGroup className="list-group-flush">
             <ListGroupItem>
-              <Button onClick={handleConsultarQR} className="btn btn-primary qr-button">
+              <Button onClick={handleConsultarQR} id={junta.id} className="btn btn-primary qr-button">
                 Consultar QR
               </Button>
             </ListGroupItem>

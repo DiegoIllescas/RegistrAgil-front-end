@@ -3,14 +3,12 @@ import PagInicio from "./PagInicio";
 import LogIn from "./components/Login";
 import RecoverPassword from "./components/RecoverPassword";
 import ResetPassword from "./components/ResetPassword";
+import ChangePassword from "./components/ChangePassword";
 import GestionarJuntas from "./components/GestionarJuntas";
 import Administrador from "./Administrador";
 import Anfitrion from "./Anfitrion";
 import Invitado from "./Invitado";
 import Recepcionista from "./Recepcionista";
-import QrScanner from "qr-scanner";
-import QRgenerator from "./QrScanner";
-import QRscanner from "./QrScanner";
 //import { PGRecepcionista } from "./PGenRecepcionista";
 import { PagPrinusers } from "./PagPrincipalusuarios";
 import UserProfile from "./components/Perfil";
@@ -33,6 +31,7 @@ export function App() {
         <Route path="/LogIn" element={<LogIn />}></Route>
         <Route path="/RecoverPassword" element={<RecoverPassword />}></Route>
         <Route path="/ResetPassword" element={<ResetPassword />}></Route>
+        <Route path="/ChangePassword" element={<ChangePassword />}></Route>
         <Route path="/Administrador" exact element={<Administrador />}>
           <Route path="Bienvenida" element={<PagPrinusers />} />
           <Route path="Perfil" element={<UserProfile />} />
@@ -51,14 +50,12 @@ export function App() {
           <Route path="GestionarJuntas" element={<GestionarJuntas />} />
         </Route>
         <Route path="/Invitado" exact element={<Invitado />}>
-          <Route path="Bienvenida" element={<PagPrinusers />} />
-          {/* <Route path="DescargarQR" element={<DescargarQR />} /> */}
         </Route>
         <Route path="/Invitado/DescargarQR" element={<DescargarQR />} />
         <Route path="/Recepcionista" exact element={<Recepcionista />}>
           <Route path="Bienvenida" element={<PagPrinusers />} />
           <Route path="Perfil" element={<UserProfile />} />
-          <Route path="QR" element={<VisualizarDatos />} />
+          <Route path="VisualizarDatos" element={<VisualizarDatos />} />
           <Route path="ConsultarJuntas" />
         </Route>
         <Route path="/FormularioInvitado" exact element={<FormInv />} />

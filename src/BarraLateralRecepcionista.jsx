@@ -4,7 +4,6 @@ import "./CSS/BarraLateral.css";
 import BarraLogo from "./imgs/RA_logo.png";
 import Inicio from "./imgs/inicio.png";
 import Perfil from "./imgs/perfil.png";
-import VisualizarDatos from "./imgs/crear_junta.png";
 import QR from "./imgs/qr.png";
 import ConsultarJuntas from "./imgs/ges_juntas.png";
 
@@ -38,14 +37,8 @@ export function BarraLateral() {
         </li>
         <li className="botonBarra">
           <Link to="/Recepcionista/VisualizarDatos">
-            <img src={VisualizarDatos} alt="Visualizar Datos Icono" className="Iconos"/>
+            <img src={QR} alt="Visualizar Datos Icono" className="Iconos"/>
             <span>Visualizar Datos</span>
-          </Link>
-        </li>
-        <li className="botonBarra">
-          <Link to="/Recepcionista/QR">
-            <img src={QR} alt="QR Icono" className="Iconos"/>
-            <span>Escanear QR</span>
           </Link>
         </li>
         <li className="botonBarra">

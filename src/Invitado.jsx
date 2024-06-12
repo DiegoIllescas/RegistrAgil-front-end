@@ -16,7 +16,7 @@ export default function Invitado() {
           </Col>
           <Col md={1} className="linea-divisoria"></Col>
           <Col md={4}>
-            <PagPrinusers nombre="Nombre del Usuario" />
+            <PagPrinusers />
           </Col>
         </Row>
       </Container>

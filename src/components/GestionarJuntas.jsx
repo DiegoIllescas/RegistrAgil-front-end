@@ -8,8 +8,6 @@ import "../CSS/Administrador.css";
 
 function GestionarJuntas() {
   const [juntas, setJuntas] = useState([]);
-
-  const [filtro, setFiltro] = useState(0);
   const [textoFiltro, setTextoFiltro] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
 

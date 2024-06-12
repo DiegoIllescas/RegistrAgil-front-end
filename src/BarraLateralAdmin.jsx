@@ -8,7 +8,6 @@ import Calendario from "./imgs/calendario.png";
 import EntradaSalida from "./imgs/entradas_salidas.png";
 import RegisEmpleados from "./imgs/reg_empleado.png";
 import Juntas from "./imgs/ges_juntas.png";
-import Invitados from "./imgs/ges_invitado.png";
 import Empleados from "./imgs/ges_empleados.png";
 
 export function BarraLateral() {
@@ -64,12 +63,6 @@ export function BarraLateral() {
           <Link to="/Administrador/GestionarJuntas">
             <img src={Juntas} alt="Juntas Icono" className="Iconos" />
             <span>Gestionar Juntas</span>
-          </Link>
-        </li>
-        <li className={linkSeleccionado === "gestionarInvitados" ? "active" : "botonBarra"}>
-          <Link to="/Administrador/GestionarInvitados" onClick={() => manejarClicEnlace("gestionarInvitados")}>
-            <img src={Invitados} alt="Gestionar Invitados Icono" className="Iconos" />
-            <span>Gestionar Invitados</span>
           </Link>
         </li>
         <li className={linkSeleccionado === "gestionarEmpleados" ? "active" : "botonBarra"}>

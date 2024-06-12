@@ -4,55 +4,19 @@ import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import { useState, useEffect } from "react";
 import HeaderLogin from "./HeaderLogin";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function ResetPassword() {
+function ChangePassword() {
     const [newPassword, setNewPassword] = useState(""); 
     const [confirmPassword, setConfirmPassword] = useState(""); 
-    const [passwordMatch, setPasswordMatch] = useState(false);
-    const navigate = useNavigate();
-
     const [passwordErrors, setPasswordErrors] = useState([]);
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
+    const [passwordMatch, setPasswordMatch] = useState(false); 
+    const [intentoEnvio, setIntentoEnvio] = useState(false); 
+    const navigate = useNavigate();
 
-    
-    const token = new URLSearchParams(useLocation().search).get("token");
-
-    useEffect(() => {
-        if(token){
-            const options = {
-                method : 'GET',
-                mode: 'cors',
-                credentials: 'same-origin',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization' : 'Bearer '+ token
-                },
-                referrerPolicy: "no-referrer"
-              };
-
-              fetch("http://localhost/backend/clave.php", options)
-              .then(response => response.json())
-              .then(data => {
-                if(!data.success) {
-                    //Modal o Alerta que no esta autorizado o el token expiro
-                    alert(data.error);
-                    navigate('/Inicio');
-                }
-              })
-        }else{
-            navigate('/Inicio');
-        }
-        const errores = generarMensajesError(newPassword);
-        setPasswordErrors(errores);
-        setPasswordMatch(confirmPassword === newPassword && errores.length === 0);
-    },[]);
-
-    useEffect(() => {
-        const errores = generarMensajesError(newPassword);
-        setPasswordErrors(errores);
-        setPasswordMatch(confirmPassword === newPassword && errores.length === 0);
-    }, [newPassword, confirmPassword]);
+    // Expresión regular para validar la contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
 
     // Mensajes de error para las validaciones de contraseña
     const mensajesError = {
@@ -75,9 +39,16 @@ function ResetPassword() {
         return errores;
     };
 
+    useEffect(() => {
+        const errores = generarMensajesError(newPassword);
+        setPasswordErrors(errores);
+        setPasswordMatch(confirmPassword === newPassword && errores.length === 0);
+    }, [newPassword, confirmPassword]);
+
+    // Manejador de cambio para el campo de nueva contraseña
     const handleNewPasswordChange = (e) => {
         setNewPassword(e.target.value); 
-    };
+    };;
 
     // Manejador de cambio para el campo de confirmar contraseña
     const handleConfirmPasswordChange = (e) => {
@@ -87,35 +58,41 @@ function ResetPassword() {
     };
 
     // Manejador de envío del formulario
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     setIntentoEnvio(true);
+    //     if (passwordMatch) {
+    //         alert("Contraseña modificada correctamente");
+    //         navigate("/LogIn");
+    //     } else {
+    //         console.log("Las contraseñas no coinciden o no cumplen con los requisitos.");
+    //     }
+    // };
+
+    // Manejador de envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIntentoEnvio(true);
         if (passwordMatch) {
-            
-            const options = {
-                method : 'PATCH',
-                mode: 'cors',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization' : 'Bearer '+ token
-                },
-                body : JSON.stringify({'clave' : newPassword}),
-                referrerPolicy: "no-referrer"
+            const correo = window.localStorage.getItem("correo");
+            const datos = {
+                correo,
+                nuevaContrasena: newPassword,
             };
 
-            fetch("http://localhost/backend/usuario.php", options)
-            .then(response => response.json())
-            .then(data => {
-                if(data.success){
-                    //Mostrar confirmacion con alerta, modal o mySwal
-                    alert("Contraseña modificada correctamente");
-                    navigate('/LogIn');
-                }else{
-                    //Mostra modal, alerta, mySwal del error: data.error tiene el error
-                    alert(data.error);
-                    console.log(data.error);
-                }
-            });
+            try {
+                // const respuesta = await fetch("http://localhost/Registragil/RestoRutaDelphpCambiarContra.php", {
+                //     method: "POST",
+                //     body: JSON.stringify(datos),
+                //     headers: {
+                //         "Content-Type": "application/json",
+                //     },
+                // });
+                // alert("Contraseña modificada correctamente");
+                navigate("/LogIn");
+            } catch (error) {
+                console.log("Error al cambiar la contraseña:", error);
+            }
         } else {
             console.log("Las contraseñas no coinciden o no cumplen con los requisitos.");
         }
@@ -136,7 +113,7 @@ function ResetPassword() {
                 className="mainContainer d-flex justify-content-center align-items-center"
             >
                 <Row className="d-flex justify-content-center">
-                    <h2>Restablecimiento de Contraseña</h2>
+                    <h2>Cambio de Contraseña</h2>
                 </Row>
             </Container>
             <br></br>
@@ -150,10 +127,12 @@ function ResetPassword() {
                         <CardBody>
                             <Card.Title className="text-center"></Card.Title>
                             <p className="mb-3" style={{ textAlign: "center" }}>
-                                Ingresa una nueva contraseña para tu cuenta, la contraseña debe contener<br />
-                                mayúsculas, minúsculas, números y caracteres, así como un número <br />
-                                mínimo de tamaño de 8 valores. Confirma tu contraseña y podrás <br />
-                                ingresar a tu cuenta.
+                            Por ser tu primer inicio de sesión dentro de nuestro sistema te pedimos que, <br />
+                            por favor, cambies tu contraseña a una clave única que sólo tú sepas y <br />
+                            recuerdes.<br />
+                            Ten en cuenta que la contraseña debe contener mayúsculas, minúsculas, <br />
+                            números y caracteres, así como un tamaño mínimo de 8 símbolos.<br />
+                            Después confirma tu contraseña y vuelve a iniciar sesión.
                             </p>
                             <br></br>
                             <Form method="post" onSubmit={handleSubmit}>
@@ -169,18 +148,12 @@ function ResetPassword() {
                                                 placeholder="Introduce tu nueva contraseña"
                                                 value={newPassword}
                                                 onChange={handleNewPasswordChange}
-                                                onBlur={handleNewPasswordChange}
-                                                //Se modifica la validación para mostrar los mensajes de error
-                                                isInvalid={passwordErrors.length > 0 }
-                                                // isInvalid={!passwordMatch && intentoEnvio} // Marca el campo como inválido si las contraseñas no coinciden o no cumplen con las validaciones y se ha intentado enviar el formulario
+                                                isInvalid={passwordErrors.length > 0 && intentoEnvio} // Marca el campo como inválido si hay errores de contraseña y se ha intentado enviar el formulario
                                             />
                                             <Form.Control.Feedback type="invalid">
-                                                
-                                                {/* Se modifica la forma de mostrar los mensajes (Se muestran los mensajes jajaja)*/}
                                                 {passwordErrors.map((error, index) => (
                                                     <div key={index}>{error}</div>
                                                 ))}
-                                                {/* {!passwordMatch && "Las contraseñas no coinciden o no cumplen con los requisitos."} */}
                                             </Form.Control.Feedback>
                                         </FloatingLabel>
                                     </Form.Group>
@@ -197,14 +170,10 @@ function ResetPassword() {
                                                 placeholder="Confirma tu nueva contraseña"
                                                 value={confirmPassword}
                                                 onChange={handleConfirmPasswordChange}
-                                                onBlur={handleConfirmPasswordChange}
-                                                //Se hace lo mismo que en el campo anterior
-                                                isInvalid={confirmPasswordError }
-                                                // isInvalid={!passwordMatch && intentoEnvio} // Marca el campo como inválido si las contraseñas no coinciden o no cumplen con las validaciones y se ha intentado enviar el formulario
+                                                isInvalid={confirmPasswordError && intentoEnvio} // Marca el campo como inválido si hay errores de confirmación de contraseña y se ha intentado enviar el formulario
                                             />
                                             <Form.Control.Feedback type="invalid">
                                                 {confirmPasswordError}
-                                                {/* {!passwordMatch && "Las contraseñas no coinciden o no cumplen con los requisitos."} */}
                                             </Form.Control.Feedback>
                                         </FloatingLabel>
                                     </Form.Group>
@@ -220,7 +189,6 @@ function ResetPassword() {
                                         <Button
                                             variant="primary"
                                             type="submit"
-                                            //Se comenta para que el botón esté siempre activo y se muestren los mensajes de error
                                             // disabled={!passwordMatch}
                                         >
                                             Aceptar
@@ -236,4 +204,4 @@ function ResetPassword() {
     );
 }
 
-export default ResetPassword;
+export default ChangePassword;

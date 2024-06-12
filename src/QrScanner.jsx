@@ -2,16 +2,17 @@ import {Html5QrcodeScanner} from "html5-qrcode";
 //useEffect ejecuta codigo despues de que el componente se renderiza
 //useState indica el estado del resultado del escaneo
 import {useEffect, useState} from 'react';
-const urlPerfil="http://localhost/login/qr.php";
+// const urlPerfil="http://localhost/login/qr.php";
 import "./QRscanner.css"
 
-function QRscanner() {
+function QRscanner({ onDataReceived }) {
   const solicitud= async(datos)=>{
-    console.log("obteniendo llave");
-    console.log("llave", datos);
+    // console.log("obteniendo llave");
+    // console.log("llave", datos);
     try {
         //solicitud
-        const respuesta=await fetch(urlPerfil, {
+        console.log("solicitando datos con la llave: ", datos);
+        const respuesta=await fetch("http://localhost/RegistrAgil/Recepcionista/qr.php", {
           method: 'POST',
           body: JSON.stringify(datos),
           headers: {
@@ -19,6 +20,7 @@ function QRscanner() {
           }
         });
         //la respuesta se almacena en un json
+        // console.log("respuesta obtenida", respuesta);
         const json=await respuesta.json();
         //impresión de la respuesta en consola para ver qué se obtuvo
         console.log("respuesta obtenida: ",json);
@@ -27,9 +29,9 @@ function QRscanner() {
           console.log("No existe el usuario");
         }else{
           console.log("Datos del usuario", json);
+          onDataReceived(json);
         }
       }catch (error) {
-        
         console.log("Error al cargar datos", error);
       }
 
@@ -50,6 +52,8 @@ const scanner=new Html5QrcodeScanner('reader',{
 //funcion que se ejecuta cuando se escanea un codigo
 function success(result){
     //limpia el escaner
+  // scanner.clear();
+  // let scanner = new Html5QrcodeScanner("reader");
   scanner.clear();
   //muestra el resultado del escaneo
     setScanResult(result);
@@ -62,7 +66,7 @@ function success(result){
 //funcion que se ejecuta si hay un error
 function error(err){
     //muestra el error en la consola
-  //console.warn(err);
+  console.warn(err);
 }
 //renderiza el escaner, recibe dos funciones, una si se escanea correctamente y otra si hay un error
 scanner.render(success, error);
@@ -73,8 +77,9 @@ return (
 <div className="App">
   <header className="App-header">
     <h1>Escanea el QR</h1>
-   {scanResult ? <p>{scanResult}</p> : <div id="reader"></div>
-   }
+   {/* {scanResult ? <p>{scanResult}</p> : <div id="reader"></div>
+   } */}
+    <div id="reader"></div>
   </header>
 </div>
 );

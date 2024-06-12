@@ -55,7 +55,7 @@ function LogIn() {
               navigate('/Administrador/Bienvenida');
               break;
             case 2:
-              navigate('/Invitado/Bienvenida');
+              navigate('/Invitado');
               break;
             case 3:
               navigate('/Recepcionista/Bienvenida');
