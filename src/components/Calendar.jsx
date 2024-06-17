@@ -19,6 +19,8 @@ const Calendar = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showGuestsModal, setShowGuestsModal] = useState(false);
   const [detailedMeeting, setDetailedMeeting] = useState(null);
+  const [view, setView] = useState('Mes');
+  const [openedFromMore, setOpenedFromMore] = useState(false);
 
   const navigate = useNavigate();
 
@@ -57,6 +59,9 @@ const Calendar = () => {
 
   const startOfMonth = currentDate.clone().startOf('month').startOf('week');
   const endOfMonth = currentDate.clone().endOf('month').endOf('week');
+
+  const startOfWeek = currentDate.clone().startOf('week');
+  const endOfWeek = currentDate.clone().endOf('week');
 
   const handleDayClick = (day, isCurrentMonth) => {
     if (!isCurrentMonth) return;
@@ -103,6 +108,43 @@ const Calendar = () => {
     return text.slice(0, length) + '...';
   };
 
+  const renderHeaders = () => {
+    if (view === 'Mes') {
+      return diasSemana.map(day => (
+        <div key={day} className="calendar-header-day">
+          {day}
+        </div>
+      ));
+    } else if (view === 'Semana') {
+      let day = startOfWeek.clone();
+      return diasSemana.map((dayName, index) => {
+        const dateHeader = `${dayName} ${day.format('DD/MM')}`;
+        const headerElement = (
+          <div key={index} className="calendar-header-day">
+            {dateHeader}
+          </div>
+        );
+        day.add(1, 'day');
+        return headerElement;
+      });
+    }
+  };
+
+  const getWeekTitle = (startOfWeek, endOfWeek) => {
+    const startMonth = meses[startOfWeek.month()];
+    const endMonth = meses[endOfWeek.month()];
+    const startYear = startOfWeek.format('YYYY');
+    const endYear = endOfWeek.format('YYYY');
+
+    if (startMonth === endMonth && startYear === endYear) {
+      return `${startMonth} de ${startYear}`;
+    } else if (startYear === endYear) {
+      return `${startMonth} - ${endMonth} de ${startYear}`;
+    } else {
+      return `${startMonth} de ${startYear} - ${endMonth} de ${endYear}`;
+    }
+  };
+
   const renderCalendarDays = () => {
     const days = [];
     let day = startOfMonth.clone();
@@ -117,13 +159,13 @@ const Calendar = () => {
         <div
           key={currentDay.format('YYYY-MM-DD')}
           className={`calendar-day ${isCurrentMonth ? '' : 'disabled'} ${isToday ? 'today' : ''}`}
-          onClick={() => handleDayClick(currentDay, isCurrentMonth)}
+          onClick={() => {handleDayClick(currentDay, isCurrentMonth); setOpenedFromMore(true); }}
         >
           <div className="date">{currentDay.date()}</div>
           <div className="reunion">
             {firstMeeting && (
               <div>
-                {renderStatusCircle(getMeetingStatus(firstMeeting))} {truncateText(firstMeeting.asunto, 12)}
+                {renderStatusCircle(getMeetingStatus(firstMeeting))} {truncateText(firstMeeting.asunto, 10)}
               </div>
             )}
             {meetingsForDay.length > 1 && <div className="text-ver-mas">{meetingsForDay.length - 1} más</div>}
@@ -136,12 +178,74 @@ const Calendar = () => {
     return days;
   };
 
-  const renderDayHeaders = () => {
-    return diasSemana.map(day => (
-      <div key={day} className="calendar-header-day">
-        {day}
+  const renderWeekDays = () => {
+    const days = [];
+    let day = startOfWeek.clone();
+
+    while (day.isBefore(endOfWeek + 1, 'day')) {
+      const currentDay = day.clone();
+      const isToday = day.isSame(moment(), 'day');
+      const meetingsForDay = getMeetingsForDay(currentDay);
+      days.push(
+        <div
+          key={currentDay.format('YYYY-MM-DD')}
+          className={`calendar-day calendar-week-day ${isToday ? 'today' : ''}`}
+        >
+          {meetingsForDay.length > 0 && (
+            <div className="reuniones">
+              {meetingsForDay.slice(0, 5).map(meeting => (
+                <div key={meeting.asunto} className="reunion" onClick={() => handleDetailClick(meeting)}>
+                  {renderStatusCircle(getMeetingStatus(meeting))} {truncateText(meeting.asunto, 12)}
+                  <br></br>
+                  <Icon.Clock color="#0B1215" size={10.5} className="me-2" />{meeting.hora_inicio} - {meeting.hora_fin}
+                </div>
+              ))}
+              {meetingsForDay.length > 5 && (
+                <div className="d-flex justify-content-center">
+                  <Button className="text-ver-mas" onClick={() => { handleDayClick(currentDay, true); setOpenedFromMore(true); }}>
+                    Ver más
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+      day.add(1, 'day');
+    }
+
+    return days;
+  };
+
+  const renderDayView = () => {
+    const meetingsForDay = getMeetingsForDay(currentDate);
+
+    return (
+      <div>
+        <div className='calendar-day-header'>Reuniones</div>
+        {meetingsForDay.length > 0 ? (
+          <>
+            {meetingsForDay.slice(0, 9).map(meeting => (
+              <div key={meeting.asunto} className="calendar-day-row" onClick={() => handleDetailClick(meeting)}>
+                <div>
+                  <span className='me-5'><Icon.Clock color="#0B1215" size={12} className="me-2" />{meeting.horaInicio} - {meeting.horaFin} </span>
+                  {renderStatusCircle(getMeetingStatus(meeting))} {meeting.asunto}
+                </div>
+              </div>
+            ))}
+            {meetingsForDay.length > 9 && (
+              <div className="d-flex justify-content-center">
+                <Button className="text-ver-mas" onClick={() => { setShowModal(true); setOpenedFromMore(true); }}>
+                  Ver más
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className='calendar-day-row-empty'>Sin reuniones.</div>
+        )}
       </div>
-    ));
+    );
   };
 
   const renderMeetingDetails = (meeting) => (
@@ -154,23 +258,51 @@ const Calendar = () => {
   );
 
   return (
-    <Container fluid className="mainContainer d-flex justify-content-center m-1 mt-3 mb-5">
+    <Container fluid className={`mainContainer d-flex justify-content-center m-1 mt-3 ${view === 'Mes' ? 'mb-5' : ''}`}>
       <Row className="d-flex justify-content-center" style={{ width: '100%' }}>
         <div className="calendar">
           <div className="calendar-header">
-            <Button className='boton-regresar' onClick={() => setCurrentDate(currentDate.clone().subtract(1, 'month'))}><Icon.ArrowLeft size={25} /></Button>
-            <h2>{meses[currentDate.month()]} {currentDate.year()}</h2>
-            <Button className="boton-regresar" onClick={() => setCurrentDate(currentDate.clone().add(1, 'month'))}><Icon.ArrowRight size={25} /></Button>
+            <div>
+              <Button className='boton-regresar me-2' onClick={() => setCurrentDate(currentDate.clone().subtract(1, view === 'Dia' ? 'day' : view === 'Mes' ? 'month' : 'week'))}>
+                <Icon.ArrowLeft size={25} />
+              </Button>
+              <Button className="boton-regresar" onClick={() => setCurrentDate(currentDate.clone().add(1, view === 'Dia' ? 'day' : view === 'Mes' ? 'month' : 'week'))}>
+                <Icon.ArrowRight size={25} />
+              </Button>
+            </div>
+            <h2>
+              {view === 'Mes'
+                ? `${meses[currentDate.month()]} ${currentDate.year()}`
+                : view === 'Semana'
+                  ? `${getWeekTitle(startOfWeek, endOfWeek)}`
+                  : `${currentDate.format('DD')} de ${meses[currentDate.month()]} de ${currentDate.year()}`}
+            </h2>
+
+            <select
+              name="vista-calendario"
+              id="vista-calendario"
+              className="calendario-select"
+              onChange={(e) => setView(e.target.value)}
+              value={view}
+            >
+              <option value="Mes">Mes</option>
+              <option value="Semana">Semana</option>
+              <option value="Dia">Día</option>
+            </select>
           </div>
-          <div className="calendar-grid">
+          <div className={`calendar-grid ${view === 'Dia' ? 'calendar-day-view' : ''}`}>
             <div className="calendar-grid-header">
-              {renderDayHeaders()}
+              {view === 'Mes' && renderHeaders()}
+              {view === 'Semana' && renderHeaders()}
             </div>
             <div className="calendar-grid-body">
-              {renderCalendarDays()}
+              {view === 'Mes' && renderCalendarDays()}
+              {view === 'Semana' && renderWeekDays()}
+              {view === 'Dia' && renderDayView()}
             </div>
           </div>
 
+          {/* Modal Reuniones del Día*/}
           <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
             <Modal.Header closeButton>
               <Modal.Title>Reuniones - {selectedDate && `${diasSemana[selectedDate.day()]} ${selectedDate.format('DD')} de ${meses[selectedDate.month()]} de ${selectedDate.format('YYYY')}`}</Modal.Title>
@@ -191,6 +323,7 @@ const Calendar = () => {
             </Modal.Footer>
           </Modal>
 
+          {/* Modal Detalles de una Reunión */}
           <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} className="custom-modal">
             <Modal.Header closeButton>
               <Modal.Title>Detalles de la Reunión</Modal.Title>
@@ -204,16 +337,24 @@ const Calendar = () => {
                   <p><Icon.Calendar color="#0B1215" size={13} className="me-2" />{detailedMeeting.fecha}</p>
                   <p><Icon.Clock color="#0B1215" size={13} className="me-2" />{detailedMeeting.hora_inicio} - {detailedMeeting.hora_fin}</p>
                   <p><Icon.GeoAlt color="#0B1215" size={15} className="me-2" />{detailedMeeting.direccion} - {detailedMeeting.sala}</p>
-                  <Button variant="link" className="boton-detalles-juntas" onClick={() => { setShowDetailModal(false); handleGuestsClick(detailedMeeting) }}>Ver invitados</Button>
+                  <Button className="boton-detalles-juntas" onClick={() => { setShowDetailModal(false); handleGuestsClick(detailedMeeting) }}>Ver invitados</Button>
                 </div>
               )}
             </Modal.Body>
             <Modal.Footer>
-              <Button className="boton" onClick={() => { setShowDetailModal(false); setShowModal(true) }}>
-                Regresar
-              </Button>
+              {openedFromMore ? (
+                <Button className="boton" onClick={() => { setOpenedFromMore(false); setShowDetailModal(false); setShowModal(true); }}>
+                  Regresar
+                </Button>
+              ) : (
+                <Button className="boton" onClick={() => setShowDetailModal(false)}>
+                  Aceptar
+                </Button>
+              )}
             </Modal.Footer>
           </Modal>
+
+          {/* Modal Lista de Invitados de una Junta*/}
           <Modal show={showGuestsModal} onHide={() => setShowGuestsModal(false)} className="custom-modal">
             <Modal.Header closeButton>
               <Modal.Title>Invitados</Modal.Title>
@@ -233,9 +374,10 @@ const Calendar = () => {
               </Button>
             </Modal.Footer>
           </Modal>
+
         </div>
       </Row>
-    </Container >
+    </Container>
   );
 };
 

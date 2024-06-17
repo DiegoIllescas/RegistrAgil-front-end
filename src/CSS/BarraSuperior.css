@@ -28,7 +28,6 @@
 }
 
 .Centro {
-  letter-spacing: 25px;
   justify-content: center;
   color: white;
   font-family: "Livvic", sans-serif;
@@ -62,6 +61,18 @@
 .Derecha a {
   border-radius: 0;
 }
+
 #tablaJuntas {
   width: 100%;
+}
+
+.cerrar-sesion {
+  background-color: #0b1215;
+  color: white;
+  border-radius: 8px;
+  border: none !important;
+}
+
+.cerrar-sesion:hover{
+  background-color: #333;
 }

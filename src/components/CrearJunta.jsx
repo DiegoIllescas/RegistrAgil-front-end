@@ -7,8 +7,7 @@ import "../CSS/Administrador.css";
 function CrearJunta() {
 
     const token = localStorage.getItem("token");
-
-    const [values, setValues] = useState({
+    const initialValues = ({
         asunto: "",
         sala: "",
         fecha: "",
@@ -19,11 +18,15 @@ function CrearJunta() {
         direccion: "",
     });
 
+    const [values, setValues] = useState(initialValues);
     const [newInvitado, setNewInvitado] = useState({
         correo: "",
         acompañantes: 0
     });
-    const today = new Date().toISOString().split('T')[0];
+
+    let date = new Date().toISOString().split("T")[0];
+    let time = new Date().toTimeString().split(" ")[0].slice(0, 5);
+
     const requiredFields = ['asunto', 'sala', 'fecha', 'hora_inicio', 'hora_fin', 'descripcion', 'direccion'];
     const [submitted, setSubmitted] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -31,7 +34,7 @@ function CrearJunta() {
     const [modalMessage, setModalMessage] = useState("");
     const [modalTitle, setModalTitle] = useState("");
 
-    const [errors, setErrors] = useState({
+    const initialErrors = ({
         asunto: "",
         sala: "",
         fecha: "",
@@ -45,25 +48,53 @@ function CrearJunta() {
         }
     });
 
+    const [errors, setErrors] = useState(initialErrors);
     const validate = (name, value) => {
         let error = "";
         switch (name) {
-            case 'correo':
-                if (value && ! /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(value)) {
-                    error = "El formato del correo electrónico es inválido";
-                }
-                break;
-            case 'asunto':
-            case 'sala':
-            case 'fecha':
-            case 'hora_inicio':
-            case 'hora_fin':
-            case 'descripcion':
-            case 'direccion':
-                if (!value) {
-                    error = "Este campo es obligatorio";
-                }
-                break;
+          case "asunto":
+          case "sala":
+          case "descripcion":
+          case "direccion":
+            if (!value) {
+              error = "Este campo es obligatorio";
+            }
+            break;
+          case "hora_inicio":
+            time = new Date().toTimeString().split(" ")[0].slice(0, 5);
+            if (!value) {
+              error = "Este campo es obligatorio";
+            } else if (value < time && values.fecha == date) {
+              error = "Hora inválida";
+            }
+            break;
+          case "hora_fin":
+            time = new Date().toTimeString().split(" ")[0].slice(0, 5);
+            if (!value) {
+              error = "Este campo es obligatorio";
+            } else if (
+              (value <= time && values.fecha == date) ||
+              value <= values.hora_inicio
+            ) {
+              error = "Hora inválida";
+            }
+            break;
+          case "correo":
+            if (
+              value &&
+              !/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(value)
+            ) {
+              error = "El formato del correo electrónico es inválido";
+            }
+            break;
+          case "fecha":
+            date = new Date().toISOString().split("T")[0];
+            if (!value) {
+              error = "Este campo es obligatorio";
+            } else if (value < date) {
+              error = "Fecha inválida";
+            }
+            break;
         }
         return error;
     };
@@ -71,38 +102,64 @@ function CrearJunta() {
     const handleInputChange = (e, index = null) => {
         const { name, value } = e.target;
         let error = validate(name, value);
-
+    
         if (index !== null) {
-            const newInvitados = values.invitados.map((invitado, i) => i === index ? { ...invitado, [name]: value } : invitado);
-            const newErrors = errors.invitados.map((error, i) => i === index ? { ...error, [name]: validate(name, value) } : error);
-            setValues({ ...values, invitados: newInvitados });
-            setErrors({ ...errors, invitados: newErrors });
+          const newInvitados = values.invitados.map((invitado, i) =>
+            i === index ? { ...invitado, [name]: value } : invitado
+          );
+          const newErrors = errors.invitados.map((error, i) =>
+            i === index ? { ...error, [name]: validate(name, value) } : error
+          );
+          setValues({ ...values, invitados: newInvitados });
+          setErrors({ ...errors, invitados: newErrors });
         } else {
-            setValues(prev => ({ ...prev, [name]: value }));
-            setErrors(prev => ({ ...prev, [name]: error }));
+          setValues((prev) => ({ ...prev, [name]: value }));
+          setErrors((prev) => ({ ...prev, [name]: error }));
         }
-    };
+      };
 
-    const handleNewInvitadoChange = (e) => {
+      const handleNewInvitadoChange = (e) => {
         const { name, value } = e.target;
         let error = validate(name, value);
-        setNewInvitado(prev => ({ ...prev, [name]: value }));
-        setErrors(prev => ({ ...prev, newInvitado: { ...prev.newInvitado, [name]: error } }));
-    };
-
-    const addInvitado = () => {
-        const correoError = validate('correo', newInvitado.correo);
-        if (correoError) {
-            setErrors(prev => ({ ...prev, newInvitado: { ...prev.newInvitado, correo: correoError } }));
-            return;
-        }
-        setValues(prev => ({
-            ...prev,
-            invitados: [...prev.invitados, newInvitado]
+        setNewInvitado((prev) => ({ ...prev, [name]: value }));
+        setErrors((prev) => ({
+          ...prev,
+          newInvitado: { ...prev.newInvitado, [name]: error },
         }));
-        setNewInvitado({ correo: "", acompañantes: 0 });
-        setErrors(prev => ({ ...prev, newInvitado: { correo: "", acompañantes: "" } }));
-    };
+      };
+
+      const addInvitado = () => {
+        let correoError = validate("correo", newInvitado.correo);
+        if (!correoError && !newInvitado.correo) {
+          correoError = "Este campo es obligatorio";
+        }
+        if (correoError) {
+          setErrors((prev) => ({
+            ...prev,
+            newInvitado: { ...prev.newInvitado, correo: correoError },
+          }));
+          return;
+        }
+        const correoExiste = values.invitados.some(
+          (invitado) => invitado.correo === newInvitado.correo
+        );
+        if (correoExiste) {
+          setErrors((prev) => ({
+            ...prev,
+            newInvitado: { ...prev.newInvitado, correo: "Correo electrónico repetido" },
+          }));
+          return;
+        }
+        setValues((prev) => ({
+          ...prev,
+          invitados: [...prev.invitados, newInvitado],
+        }));
+        setNewInvitado({ correo: "", acompañantes: "0" });
+        setErrors((prev) => ({
+          ...prev,
+          newInvitado: { correo: "", acompañantes: "" },
+        }));
+      };
 
     const removeInvitado = index => {
         const newInvitados = values.invitados.filter((_, i) => i !== index);
@@ -138,8 +195,12 @@ function CrearJunta() {
                 </p>
                     {values.invitados.map((invitado, index) => (
                         <p key={index} className="ms-4">
-                            {index+1}. {invitado.correo} - {invitado.acompañantes > 0 ? `${invitado.acompañantes} acompañante${invitado.acompañantes > 1 ? 's' : ''}` : 'sin acompañantes'}
-                        </p>
+                        {index + 1}. {invitado.correo} -{" "}
+                        {invitado.acompañantes > 0
+                          ? `${invitado.acompañantes} acompañante${invitado.acompañantes > 1 ? "s" : ""
+                          }`
+                          : "sin acompañantes"}
+                      </p>
                     ))}
             </div>
         );
@@ -150,28 +211,38 @@ function CrearJunta() {
         setSubmitted(true);
 
         const updatedErrors = { ...errors };
-        requiredFields.forEach(field => {
-            updatedErrors[field] = validate(field, values[field]);
+        requiredFields.forEach((field) => {
+        updatedErrors[field] = validate(field, values[field]);
         });
 
-        let newInvitadoError = validate('correo', newInvitado.correo);
-        if (newInvitado.correo && !newInvitadoError) {
-            newInvitadoError = "Agregar Invitado";
+        let correoExiste = values.invitados.some(
+        (invitado) => invitado.correo === newInvitado.correo
+        );
+        let newInvitadoError = validate("correo", newInvitado.correo);
+        if (newInvitado.correo && !newInvitadoError && !correoExiste) {
+        newInvitadoError = "Agregar Invitado";
         }
 
         if (newInvitadoError) {
-            setErrors(prev => ({ ...prev, newInvitado: { ...prev.newInvitado, correo: newInvitadoError } }));
-            console.error("Error en el correo del nuevo invitado:", newInvitadoError);
-            return;
+        setErrors((prev) => ({
+            ...prev,
+            newInvitado: { ...prev.newInvitado, correo: newInvitadoError },
+        }));
+        console.error("Error en el correo del nuevo invitado:", newInvitadoError);
+        return;
         }
 
         setErrors(updatedErrors);
 
-        const missingFields = requiredFields.filter(field => !values[field]);
+        const missingFields = requiredFields.filter((field) => !values[field]);
         if (missingFields.length > 0) {
-            console.error("Campos obligatorios faltantes:", missingFields);
-            return;
+        console.error("Campos obligatorios faltantes:", missingFields);
+        return;
         }
+
+        const correoAnfitrion = window.localStorage.getItem("correo");
+        values.correoAnfitrion = correoAnfitrion;
+        console.log(values);
         setShowConfirmModal(true);
     };
 
@@ -194,14 +265,18 @@ function CrearJunta() {
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                setShowConfirmModal(false);
                 setModalTitle("Datos Registrados");
                 setModalMessage("La junta se ha creado con éxito.");
                 setShowSuccessModal(true);
-            }else {
                 setShowConfirmModal(false);
-                setModalTitle("No se ha podido crear");
-                setModalMessage("Error: "+data.error);
+
+                setValues(initialValues);
+                setNewInvitado({ correo: "", acompañantes: "0" });
+                setErrors(initialErrors);
+                setSubmitted(false);
+            }else {
+                setModalTitle("Datos No Registrados");
+                setModalMessage("Ocurrió un error al enviar los datos.");
                 setShowSuccessModal(true);
             }
         })
@@ -267,7 +342,7 @@ function CrearJunta() {
                                                     name="fecha"
                                                     className="input card-input"
                                                     value={values.fecha}
-                                                    min={today}
+                                                    min={date}
                                                     onChange={handleInputChange}
                                                     isInvalid={errors.fecha}
                                                     isValid={submitted && !errors.fecha && values.fecha}
