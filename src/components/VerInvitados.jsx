@@ -17,10 +17,12 @@ function VerInvitados({ invitados }) {
             id={"checkbox" + contador}
             label={invitado.nombre}
             reverse
+            disabled
+            checked={invitado.estado === "Confirmada"}
           />
         </td>
         <td>
-          {invitado.correo} <Icon.PencilSquare size={25} />{" "}
+          {invitado.correo} {" "}
         </td>
 
         <td>

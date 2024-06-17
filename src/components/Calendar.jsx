@@ -362,7 +362,7 @@ const Calendar = () => {
             <Modal.Body>
               {detailedMeeting && Array.isArray(detailedMeeting.invitados) && detailedMeeting.invitados.length > 0 ? (
                 detailedMeeting.invitados.map((invitado, index) => (
-                  <p key={index}>{index + 1}. {invitado.nombre ? invitado.nombre : invitado.correo}</p>
+                  <p key={index}>{index + 1}. {invitado.nombre ? invitado.nombre : invitado.correo}  <span className={invitado.estado === "Confirmada" ? "statusConfirm" : "statusPendient"}>{invitado.estado}</span></p>
                 ))
               ) : (
                 <p>Sin invitados.</p>

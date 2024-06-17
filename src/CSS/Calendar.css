@@ -183,6 +183,18 @@
     margin-right: 5px;
 }
 
+.statusConfirm {
+    padding: 1px 3px;
+    border-radius: 5px;
+    background-color: #90ee90
+}
+
+.statusPendient {
+    padding: 1px 3px;
+    border-radius: 5px;
+    background-color: #FF7276
+}
+
 @media (max-width: 1200px) {
     .calendar-header h2 {
         font-size: 1.6rem;
